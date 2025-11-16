@@ -7,14 +7,17 @@ TypeORM will be instantiated in the main app module
 
 We use TypeORM in order to define our database entities
 * The database entities will be stored in their own domain directory, for instance
-    * If we have an entity called `User` (a single word)
-        * It will be placed inside the `src/users` directory
-        * The file name will be `user.entity.ts`
-        * The database table name will be `Users`
+    * If we have an entity called `Employee` (a single word)
+        * It will be placed inside the `src/employees` directory
+        * The file name will be `employee.entity.ts`
+        * The database table name will be `Employees`
     * If we have an entity called `ShoppingCart` (multiple words)
         * It will be placed inside the `src/shopping-carts` directory
         * The file name will be `shopping-cart.entity.ts`
         * The database table will be `ShoppingCarts`
+
+The only entity that does not respect the above pattern is the `User` entity, which has the following rule
+* It will be placed inside the `src/authz/users` directory
 
 The following entities are part of the application
 
@@ -39,7 +42,6 @@ The following entities are part of the application
 | last_name  | TEXT     |                                   |
 | position   | TEXT     |                                   |
 | department | TEXT     |                                   |
-| email_work | TEXT     |                                   |
 | phone      | TEXT     |                                   |
 | location   | TEXT     |                                   |
 | hire_date  | DATETIME |                                   |

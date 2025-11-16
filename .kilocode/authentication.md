@@ -61,6 +61,7 @@ For each endpoint that contains a request body, create a DTO
     * password
 * Response body:
     * token
+* Response code: 200
 
 The password will be received in plain in the request body
 Search a user in the `Users` table with the respective e-mail

@@ -1,0 +1,10 @@
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+
+export class CreateFeedbackDto {
+    @IsString()
+    @IsNotEmpty()
+    text: string;
+
+    @IsBoolean()
+    polish: boolean;
+}
