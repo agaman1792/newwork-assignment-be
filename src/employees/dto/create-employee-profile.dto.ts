@@ -10,6 +10,5 @@ export class CreateEmployeeProfileDto {
     password: string;
 
     @IsString()
-    @IsNotEmpty()
     roles: string;
 }

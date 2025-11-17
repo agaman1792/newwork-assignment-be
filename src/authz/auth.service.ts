@@ -37,7 +37,9 @@ export class AuthService {
                 roles: employee.roles,
             };
             return {
-                token: this.jwtService.sign(payload),
+                token: this.jwtService.sign(payload, {
+                    expiresIn: '1Y'
+                }),
             };
         }
         throw new UnauthorizedException('Please check your login credentials');

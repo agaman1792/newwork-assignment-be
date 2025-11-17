@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AbsenceRequest } from './absence-request.entity';
 import { CreateAbsenceRequestDto } from './dto/create-absence-request.dto';
+import { User } from 'src/authz/user.interface';
 import { Employee } from '../employees/employee.entity';
 @Injectable()
 export class AbsenceRequestsService {
@@ -20,7 +21,7 @@ export class AbsenceRequestsService {
     async create(
         profileId: string,
         createDto: CreateAbsenceRequestDto,
-        user: Employee,
+        user: User,
     ): Promise<AbsenceRequest> {
         const employee = await this.employeeRepository.findOne({
             where: { id: profileId },
@@ -29,7 +30,7 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Employee profile not found');
         }
 
-        const isOwner = employee.id === user.id;
+        const isOwner = employee.id === user.userId;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -40,7 +41,9 @@ export class AbsenceRequestsService {
         }
 
         const absenceRequest = this.absenceRequestRepository.create({
-            ...createDto,
+            reason: createDto.reason,
+            start_date: createDto.startDate,
+            end_date: createDto.endDate,
             profile_id: profileId,
             status: 'PENDING',
         });
@@ -50,7 +53,7 @@ export class AbsenceRequestsService {
 
     async findAllForProfile(
         profileId: string,
-        user: Employee,
+        user: User,
     ): Promise<AbsenceRequest[]> {
         const employee = await this.employeeRepository.findOne({
             where: { id: profileId },
@@ -59,7 +62,9 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Employee profile not found');
         }
 
-        const isOwner = employee.id === user.id;
+        console.log(employee.id, user.userId);
+
+        const isOwner = employee.id === user.userId;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -80,7 +85,7 @@ export class AbsenceRequestsService {
         );
     }
 
-    async approve(id: string, user: Employee): Promise<AbsenceRequest> {
+    async approve(id: string, user: User): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
         });
@@ -89,11 +94,11 @@ export class AbsenceRequestsService {
         }
 
         absenceRequest.status = 'APPROVED';
-        absenceRequest.approver_id = user.id;
+        absenceRequest.approver_id = user.userId;
         return this.absenceRequestRepository.save(absenceRequest);
     }
 
-    async reject(id: string, user: Employee): Promise<AbsenceRequest> {
+    async reject(id: string, user: User): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
         });
@@ -102,11 +107,11 @@ export class AbsenceRequestsService {
         }
 
         absenceRequest.status = 'REJECTED';
-        absenceRequest.approver_id = user.id;
+        absenceRequest.approver_id = user.userId;
         return this.absenceRequestRepository.save(absenceRequest);
     }
 
-    async cancel(id: string, user: Employee): Promise<AbsenceRequest> {
+    async cancel(id: string, user: User): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
             relations: ['profile'],
@@ -115,7 +120,7 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Absence request not found');
         }
 
-        if (absenceRequest.profile.id !== user.id) {
+        if (absenceRequest.profile.id !== user.userId) {
             throw new UnauthorizedException(
                 'You can only cancel your own absence requests',
             );

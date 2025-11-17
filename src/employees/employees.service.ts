@@ -11,7 +11,7 @@ import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
 import { UpdateEmployeeRolesDto } from './dto/update-employee-roles.dto';
 import * as bcrypt from 'bcrypt';
-import e from 'express';
+import { User } from 'src/authz/user.interface';
 
 @Injectable()
 export class EmployeesService {
@@ -47,7 +47,7 @@ export class EmployeesService {
         return this.employeesRepository.find();
     }
 
-    async findOne(id: string, user: Employee): Promise<Partial<Employee>> {
+    async findOne(id: string, user: User): Promise<Partial<Employee>> {
         const employee = await this.employeesRepository.findOne({
             where: { id },
         });
@@ -56,7 +56,7 @@ export class EmployeesService {
             throw new NotFoundException(`Employee with ID ${id} not found`);
         }
 
-        const isOwner = employee.id === user.id;
+        const isOwner = employee.id === user.userId;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -73,7 +73,7 @@ export class EmployeesService {
     async update(
         id: string,
         updateEmployeeProfileDto: UpdateEmployeeProfileDto,
-        user: Employee,
+        user: User,
     ): Promise<void> {
         const employee = await this.employeesRepository.findOne({
             where: { id },
@@ -83,7 +83,7 @@ export class EmployeesService {
             throw new NotFoundException(`Employee with ID ${id} not found`);
         }
 
-        const isOwner = employee.id === user.id;
+        const isOwner = employee.id === user.userId;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
