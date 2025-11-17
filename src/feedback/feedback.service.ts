@@ -36,29 +36,34 @@ export class FeedbackService {
 
         if (polish) {
             try {
-                const { data } = await firstValueFrom(
-                    this.httpService.post(
-                        'https://api-inference.huggingface.co/models/tuner007/pegasus_paraphrase',
-                        { inputs: text },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`,
-                            },
+                const response = await fetch(
+                    'https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn',
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`,
+                            "Content-Type": "application/json",
                         },
-                    ),
+                        body: JSON.stringify({
+                            inputs: text
+                        })
+                    },
                 );
-                polishedText = data[0].generated_text;
+                console.log(response);
+                const data = await response.json();
+                console.log("Got data", data);
+                polishedText = data[0].summary_text;
             } catch (error) {
                 console.error('Error polishing text:', error);
             }
         }
 
         const feedback = new Feedback();
-        feedback.profile_id = profileId;
-        feedback.author_id = authorId;
-        feedback.text_original = text;
-        feedback.text_polished = polishedText;
-        feedback.is_polished = polish && polishedText ? 1 : 0;
+        feedback.profileId = profileId;
+        feedback.authorId = authorId;
+        feedback.textOriginal = text;
+        feedback.textPolished = polishedText;
+        feedback.isPolished = polish && polishedText ? 1 : 0;
 
         return this.feedbackRepository.save(feedback);
     }
@@ -69,7 +74,7 @@ export class FeedbackService {
         offset?: number,
     ): Promise<Feedback[]> {
         const employee = await this.employeeRepository.findOne({
-            where: { id: profileId },
+            where: { id: profileId }
         });
         if (!employee) {
             throw new NotFoundException(
@@ -78,9 +83,12 @@ export class FeedbackService {
         }
 
         return this.feedbackRepository.find({
-            where: { profile_id: profileId },
+            where: { profileId: profileId },
             take: limit,
             skip: offset,
+            relations: {
+                author: true
+            }
         });
     }
 }

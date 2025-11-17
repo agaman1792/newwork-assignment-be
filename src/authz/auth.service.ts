@@ -26,11 +26,11 @@ export class AuthService {
         const { email, password } = loginDto;
         const employee = await this.employeesRepository
             .createQueryBuilder('employee')
-            .addSelect('employee.password_hash')
+            .addSelect('employee.passwordHash')
             .where('employee.email = :email', { email })
             .getOne();
 
-        if (employee && (await bcrypt.compare(password, employee.password_hash))) {
+        if (employee && (await bcrypt.compare(password, employee.passwordHash))) {
             const payload = {
                 sub: employee.id,
                 email: employee.email,
@@ -52,15 +52,15 @@ export class AuthService {
         const { oldPassword, newPassword } = changePasswordDto;
         const employee = await this.employeesRepository
             .createQueryBuilder('employee')
-            .addSelect('employee.password_hash')
+            .addSelect('employee.passwordHash')
             .where('employee.id = :id', { id: userId })
             .getOne();
 
-        if (!employee || !(await bcrypt.compare(oldPassword, employee.password_hash))) {
+        if (!employee || !(await bcrypt.compare(oldPassword, employee.passwordHash))) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        employee.password_hash = await bcrypt.hash(newPassword, 10);
+        employee.passwordHash = await bcrypt.hash(newPassword, 10);
         await this.employeesRepository.save(employee);
     }
 
@@ -75,20 +75,20 @@ export class AuthService {
         }
 
         const newPassword = Math.random().toString(36).slice(-12);
-        employee.password_hash = await bcrypt.hash(newPassword, 10);
+        employee.passwordHash = await bcrypt.hash(newPassword, 10);
         await this.employeesRepository.save(employee);
 
         return { password: newPassword };
     }
 
-    async getProfile(userId: string): Promise<Omit<Employee, 'password_hash'>> {
+    async getProfile(userId: string): Promise<Omit<Employee, 'passwordHash'>> {
         const employee = await this.employeesRepository.findOne({
             where: { id: userId },
         });
         if (!employee) {
             throw new NotFoundException('User not found');
         }
-        const { password_hash, ...result } = employee;
+        const { passwordHash, ...result } = employee;
         return result;
     }
 }

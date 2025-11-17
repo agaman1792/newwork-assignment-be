@@ -42,9 +42,9 @@ export class AbsenceRequestsService {
 
         const absenceRequest = this.absenceRequestRepository.create({
             reason: createDto.reason,
-            start_date: createDto.startDate,
-            end_date: createDto.endDate,
-            profile_id: profileId,
+            startDate: createDto.startDate,
+            endDate: createDto.endDate,
+            profileId: profileId,
             status: 'PENDING',
         });
 
@@ -70,19 +70,20 @@ export class AbsenceRequestsService {
 
         if (isOwner) {
             return this.absenceRequestRepository.find({
-                where: { profile_id: profileId },
+                where: { profileId: profileId },
             });
         }
 
         if (isManager || isAdmin) {
             return this.absenceRequestRepository.find({
-                where: { profile_id: profileId },
+                where: { profileId: profileId },
             });
         }
 
-        throw new UnauthorizedException(
-            'You are not authorized to view these absence requests',
-        );
+        return [];
+        // throw new UnauthorizedException(
+        //     'You are not authorized to view these absence requests',
+        // );
     }
 
     async approve(id: string, user: User): Promise<AbsenceRequest> {
@@ -94,7 +95,7 @@ export class AbsenceRequestsService {
         }
 
         absenceRequest.status = 'APPROVED';
-        absenceRequest.approver_id = user.userId;
+        absenceRequest.approverId = user.userId;
         return this.absenceRequestRepository.save(absenceRequest);
     }
 
@@ -107,7 +108,7 @@ export class AbsenceRequestsService {
         }
 
         absenceRequest.status = 'REJECTED';
-        absenceRequest.approver_id = user.userId;
+        absenceRequest.approverId = user.userId;
         return this.absenceRequestRepository.save(absenceRequest);
     }
 

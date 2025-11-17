@@ -18,10 +18,10 @@ export class AuditService {
         details?: any,
     ): Promise<Audit> {
         const auditLog = this.auditRepository.create({
-            user_id: userId,
+            userId: userId,
             action,
             entity,
-            entity_id: entityId,
+            entityId: entityId,
             details: details ? JSON.stringify(details) : '',
         });
 

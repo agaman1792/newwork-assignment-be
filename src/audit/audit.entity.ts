@@ -13,8 +13,8 @@ export class Audit {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'text' })
-    user_id: string;
+    @Column({ type: 'text', name: 'user_id' })
+    userId: string;
 
     @ManyToOne(() => Employee)
     @JoinColumn({ name: 'user_id' })
@@ -26,12 +26,12 @@ export class Audit {
     @Column({ type: 'text' })
     entity: string;
 
-    @Column({ type: 'text' })
-    entity_id: string;
+    @Column({ type: 'text', name: 'entity_id' })
+    entityId: string;
 
     @Column({ type: 'text' })
     details: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

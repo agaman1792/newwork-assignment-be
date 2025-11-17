@@ -12,29 +12,29 @@ export class Feedback {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'text' })
-    profile_id: string;
+    @Column({ type: 'text', name: 'profile_id' })
+    profileId: string;
 
     @ManyToOne(() => Employee)
     @JoinColumn({ name: 'profile_id' })
     profile: Employee;
 
-    @Column({ type: 'text' })
-    author_id: string;
+    @Column({ type: 'text', name: 'author_id' })
+    authorId: string;
 
     @ManyToOne(() => Employee)
     @JoinColumn({ name: 'author_id' })
     author: Employee;
 
-    @Column({ type: 'text' })
-    text_original: string;
+    @Column({ type: 'text', name: 'text_original' })
+    textOriginal: string;
 
-    @Column({ type: 'text', nullable: true })
-    text_polished: string | null;
+    @Column({ type: 'text', nullable: true, name: 'text_polished' })
+    textPolished: string | null;
 
-    @Column({ type: 'integer', default: 0 })
-    is_polished: number;
+    @Column({ type: 'integer', default: 0, name: 'is_polished' })
+    isPolished: number;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

@@ -14,20 +14,20 @@ export class Employee {
     @Column({ type: 'text', unique: true })
     email: string;
 
-    @Column({ type: 'text', select: false })
-    password_hash: string;
+    @Column({ type: 'text', select: false, name: 'password_hash' })
+    passwordHash: string;
 
     @Column({ type: 'text' })
     roles: string;
 
-    @Column({ type: 'integer', default: 1 })
-    is_active: number;
+    @Column({ type: 'integer', default: 1, name: 'is_active' })
+    isActive: number;
 
-    @Column({ type: 'text', nullable: true })
-    first_name: string;
+    @Column({ type: 'text', nullable: true, name: 'first_name' })
+    firstName: string;
 
-    @Column({ type: 'text', nullable: true })
-    last_name: string;
+    @Column({ type: 'text', nullable: true, name: 'last_name' })
+    lastName: string;
 
     @Column({ type: 'text', nullable: true })
     position: string;
@@ -41,11 +41,11 @@ export class Employee {
     @Column({ type: 'text', nullable: true })
     location: string;
 
-    @Column({ type: 'datetime', nullable: true })
-    hire_date: Date;
+    @Column({ type: 'datetime', nullable: true, name: 'hire_date' })
+    hireDate: Date;
 
-    @Column({ type: 'datetime', nullable: true })
-    birth_date: Date;
+    @Column({ type: 'datetime', nullable: true, name: 'birth_date' })
+    birthDate: Date;
 
     @Column({ type: 'real', nullable: true })
     salary: number;
@@ -59,12 +59,12 @@ export class Employee {
     @Column({ type: 'text', nullable: true })
     skills: string;
 
-    @Column({ type: 'text', nullable: true })
-    image_url: string;
+    @Column({ type: 'text', nullable: true, name: 'image_url' })
+    imageUrl: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date;
 }

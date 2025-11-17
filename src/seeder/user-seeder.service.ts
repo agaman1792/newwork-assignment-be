@@ -20,11 +20,11 @@ export class UserSeederService implements OnModuleInit {
             const hashedPassword = await bcrypt.hash('admin', 10);
             const admin = this.employeesRepository.create({
                 email: 'admin@example.com',
-                password_hash: hashedPassword,
+                passwordHash: hashedPassword,
                 roles: 'ADMIN',
-                is_active: 1,
-                first_name: 'Admin',
-                last_name: 'User',
+                isActive: 1,
+                firstName: 'Admin',
+                lastName: 'User',
             });
             await this.employeesRepository.save(admin);
         }

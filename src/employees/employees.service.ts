@@ -32,11 +32,11 @@ export class EmployeesService {
             throw new ConflictException('Employee with this email already exists');
         }
 
-        const password_hash = await bcrypt.hash(password, 10);
+        const passwordHash = await bcrypt.hash(password, 10);
 
         const employee = this.employeesRepository.create({
             email,
-            password_hash,
+            passwordHash,
             roles: roles || 'EMPLOYEE',
         });
 
@@ -108,19 +108,19 @@ export class EmployeesService {
             roles,
         } = updateEmployeeProfileDto;
 
-        if (firstName) employee.first_name = firstName;
-        if (lastName) employee.last_name = lastName;
+        if (firstName) employee.firstName = firstName;
+        if (lastName) employee.lastName = lastName;
         if (position) employee.position = position;
         if (department) employee.department = department;
         if (phone) employee.phone = phone;
         if (location) employee.location = location;
-        if (hireDate) employee.hire_date = new Date(hireDate);
-        if (birthDate) employee.birth_date = new Date(birthDate);
+        if (hireDate) employee.hireDate = new Date(hireDate);
+        if (birthDate) employee.birthDate = new Date(birthDate);
         if (salary) employee.salary = parseFloat(salary);
         if (ssn) employee.ssn = ssn;
         if (bio) employee.bio = bio;
         if (skills) employee.skills = skills;
-        if (imageUrl) employee.image_url = imageUrl;
+        if (imageUrl) employee.imageUrl = imageUrl;
         if (roles) employee.roles = roles;
 
         await this.employeesRepository.save(employee);

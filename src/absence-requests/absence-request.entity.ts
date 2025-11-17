@@ -13,25 +13,25 @@ export class AbsenceRequest {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'text' })
-    profile_id: string;
+    @Column({ type: 'text', name: 'profile_id' })
+    profileId: string;
 
     @ManyToOne(() => Employee)
     @JoinColumn({ name: 'profile_id' })
     profile: Employee;
 
-    @Column({ type: 'text', nullable: true })
-    approver_id: string;
+    @Column({ type: 'text', nullable: true, name: 'approver_id' })
+    approverId: string;
 
     @ManyToOne(() => Employee)
     @JoinColumn({ name: 'approver_id' })
     approver: Employee;
 
-    @Column({ type: 'datetime' })
-    start_date: Date;
+    @Column({ type: 'datetime', name: 'start_date' })
+    startDate: Date;
 
-    @Column({ type: 'datetime' })
-    end_date: Date;
+    @Column({ type: 'datetime', name: 'end_date' })
+    endDate: Date;
 
     @Column({ type: 'text' })
     reason: string;
@@ -39,9 +39,9 @@ export class AbsenceRequest {
     @Column({ type: 'text' })
     status: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date;
 }
