@@ -3,6 +3,10 @@ import { IsOptional, IsString } from 'class-validator';
 export class UpdateEmployeeProfileDto {
     @IsString()
     @IsOptional()
+    roles?: string;
+
+    @IsString()
+    @IsOptional()
     firstName?: string;
 
     @IsString()

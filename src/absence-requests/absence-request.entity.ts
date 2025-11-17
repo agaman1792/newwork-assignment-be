@@ -8,8 +8,6 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { Employee } from '../employees/employee.entity';
-import { User } from '../authz/users/user.entity';
-
 @Entity('AbsenceRequests')
 export class AbsenceRequest {
     @PrimaryGeneratedColumn('uuid')
@@ -25,9 +23,9 @@ export class AbsenceRequest {
     @Column({ type: 'text', nullable: true })
     approver_id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => Employee)
     @JoinColumn({ name: 'approver_id' })
-    approver: User;
+    approver: Employee;
 
     @Column({ type: 'datetime' })
     start_date: Date;

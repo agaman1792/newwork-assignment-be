@@ -6,7 +6,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../authz/users/user.entity';
+import { Employee } from '../employees/employee.entity';
 
 @Entity('Audits')
 export class Audit {
@@ -16,9 +16,9 @@ export class Audit {
     @Column({ type: 'text' })
     user_id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => Employee)
     @JoinColumn({ name: 'user_id' })
-    user: User;
+    user: Employee;
 
     @Column({ type: 'text' })
     action: string;

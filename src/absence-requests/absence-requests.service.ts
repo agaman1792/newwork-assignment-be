@@ -8,8 +8,6 @@ import { Repository } from 'typeorm';
 import { AbsenceRequest } from './absence-request.entity';
 import { CreateAbsenceRequestDto } from './dto/create-absence-request.dto';
 import { Employee } from '../employees/employee.entity';
-import { User } from '../authz/users/user.entity';
-
 @Injectable()
 export class AbsenceRequestsService {
     constructor(
@@ -22,7 +20,7 @@ export class AbsenceRequestsService {
     async create(
         profileId: string,
         createDto: CreateAbsenceRequestDto,
-        user: User,
+        user: Employee,
     ): Promise<AbsenceRequest> {
         const employee = await this.employeeRepository.findOne({
             where: { id: profileId },
@@ -31,7 +29,7 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Employee profile not found');
         }
 
-        const isOwner = employee.user_id === user.id;
+        const isOwner = employee.id === user.id;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -52,7 +50,7 @@ export class AbsenceRequestsService {
 
     async findAllForProfile(
         profileId: string,
-        user: User,
+        user: Employee,
     ): Promise<AbsenceRequest[]> {
         const employee = await this.employeeRepository.findOne({
             where: { id: profileId },
@@ -61,7 +59,7 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Employee profile not found');
         }
 
-        const isOwner = employee.user_id === user.id;
+        const isOwner = employee.id === user.id;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -82,7 +80,7 @@ export class AbsenceRequestsService {
         );
     }
 
-    async approve(id: string, user: User): Promise<AbsenceRequest> {
+    async approve(id: string, user: Employee): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
         });
@@ -95,7 +93,7 @@ export class AbsenceRequestsService {
         return this.absenceRequestRepository.save(absenceRequest);
     }
 
-    async reject(id: string, user: User): Promise<AbsenceRequest> {
+    async reject(id: string, user: Employee): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
         });
@@ -108,7 +106,7 @@ export class AbsenceRequestsService {
         return this.absenceRequestRepository.save(absenceRequest);
     }
 
-    async cancel(id: string, user: User): Promise<AbsenceRequest> {
+    async cancel(id: string, user: Employee): Promise<AbsenceRequest> {
         const absenceRequest = await this.absenceRequestRepository.findOne({
             where: { id },
             relations: ['profile'],
@@ -117,7 +115,7 @@ export class AbsenceRequestsService {
             throw new NotFoundException('Absence request not found');
         }
 
-        if (absenceRequest.profile.user_id !== user.id) {
+        if (absenceRequest.profile.id !== user.id) {
             throw new UnauthorizedException(
                 'You can only cancel your own absence requests',
             );

@@ -2,62 +2,64 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
-    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../authz/users/user.entity';
 
 @Entity('Employees')
 export class Employee {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'text', unique: true, nullable: true })
-    user_id: string;
+    @Column({ type: 'text', unique: true })
+    email: string;
 
-    @OneToOne(() => User)
-    @JoinColumn({ name: 'user_id' })
-    user: User;
+    @Column({ type: 'text', select: false })
+    password_hash: string;
 
     @Column({ type: 'text' })
+    roles: string;
+
+    @Column({ type: 'integer', default: 1 })
+    is_active: number;
+
+    @Column({ type: 'text', nullable: true })
     first_name: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     last_name: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     position: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     department: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     phone: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     location: string;
 
-    @Column({ type: 'datetime' })
+    @Column({ type: 'datetime', nullable: true })
     hire_date: Date;
 
-    @Column({ type: 'datetime' })
+    @Column({ type: 'datetime', nullable: true })
     birth_date: Date;
 
-    @Column({ type: 'real' })
+    @Column({ type: 'real', nullable: true })
     salary: number;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     ssn: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     bio: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     skills: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', nullable: true })
     image_url: string;
 
     @CreateDateColumn()

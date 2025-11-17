@@ -21,27 +21,38 @@ bio
 skills
 image_url
 
-
-
 ## Employee profile endpoints
 
 All authentication endpoints will have the `/profiles` prefix
 The following endpoints will be implemented
 For each endpoint that contains a request body, create a DTO
 
-#### Create an employee profile
+#### Create an employee
 * Request method: POST
-* Request path: /profiles
+* Request path: /
+* Request headers:
+    * Authorization
+        * Contains the user bearer token
+* Request body:
+    * e-mail
+    * password
+    * roles
+* Errors
+    * 401 if unauthenticated
+
+Authorization rules:
+* Allowed if owner OR has MANAGER or ADMIN role
+
+#### Get all profiles
+* Request method: GET
+* Request path: /
 * Request headers:
     * Authorization
         * Contains the user bearer token
 * Response body:
-    * id, the user id which this employee profile will be linked to
+    * the profiles list
 * Errors
-    * 404 if user not found
     * 401 if unauthenticated
-
-Only managers or admins can call this endpoint
 
 #### Read a profile
 * Request method: GET
@@ -68,7 +79,6 @@ Only managers or admins can call this endpoint
 * Errors
     * 403 if not authorized
     * 404 if not found
-
 
 Authorization rules:
 * Allowed if owner OR has MANAGER or ADMIN role

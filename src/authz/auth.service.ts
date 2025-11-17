@@ -7,8 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './users/user.entity';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { Employee } from '../employees/employee.entity';
+import { RegisterEmployeeDto } from './dto/register-employee.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -17,41 +17,24 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        @InjectRepository(Employee)
+        private employeesRepository: Repository<Employee>,
         private jwtService: JwtService,
     ) {}
 
-    async register(registerUserDto: RegisterUserDto): Promise<void> {
-        const { email, password, roles } = registerUserDto;
-
-        const existingUser = await this.usersRepository.findOne({
-            where: { email },
-        });
-        if (existingUser) {
-            throw new ConflictException('Email already registered');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = this.usersRepository.create({
-            email,
-            password_hash: hashedPassword,
-            roles,
-        });
-
-        await this.usersRepository.save(user);
-    }
-
     async login(loginDto: LoginDto): Promise<{ token: string }> {
         const { email, password } = loginDto;
-        const user = await this.usersRepository.findOne({ where: { email } });
+        const employee = await this.employeesRepository
+            .createQueryBuilder('employee')
+            .addSelect('employee.password_hash')
+            .where('employee.email = :email', { email })
+            .getOne();
 
-        if (user && (await bcrypt.compare(password, user.password_hash))) {
+        if (employee && (await bcrypt.compare(password, employee.password_hash))) {
             const payload = {
-                sub: user.id,
-                email: user.email,
-                roles: user.roles,
+                sub: employee.id,
+                email: employee.email,
+                roles: employee.roles,
             };
             return {
                 token: this.jwtService.sign(payload),
@@ -65,43 +48,45 @@ export class AuthService {
         changePasswordDto: ChangePasswordDto,
     ): Promise<void> {
         const { oldPassword, newPassword } = changePasswordDto;
-        const user = await this.usersRepository.findOne({
-            where: { id: userId },
-        });
+        const employee = await this.employeesRepository
+            .createQueryBuilder('employee')
+            .addSelect('employee.password_hash')
+            .where('employee.id = :id', { id: userId })
+            .getOne();
 
-        if (!user || !(await bcrypt.compare(oldPassword, user.password_hash))) {
+        if (!employee || !(await bcrypt.compare(oldPassword, employee.password_hash))) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        user.password_hash = await bcrypt.hash(newPassword, 10);
-        await this.usersRepository.save(user);
+        employee.password_hash = await bcrypt.hash(newPassword, 10);
+        await this.employeesRepository.save(employee);
     }
 
     async resetPassword(
         resetPasswordDto: ResetPasswordDto,
     ): Promise<{ password }> {
         const { email } = resetPasswordDto;
-        const user = await this.usersRepository.findOne({ where: { email } });
+        const employee = await this.employeesRepository.findOne({ where: { email } });
 
-        if (!user) {
+        if (!employee) {
             throw new NotFoundException('User not found');
         }
 
         const newPassword = Math.random().toString(36).slice(-12);
-        user.password_hash = await bcrypt.hash(newPassword, 10);
-        await this.usersRepository.save(user);
+        employee.password_hash = await bcrypt.hash(newPassword, 10);
+        await this.employeesRepository.save(employee);
 
         return { password: newPassword };
     }
 
-    async getProfile(userId: string): Promise<Omit<User, 'password_hash'>> {
-        const user = await this.usersRepository.findOne({
+    async getProfile(userId: string): Promise<Omit<Employee, 'password_hash'>> {
+        const employee = await this.employeesRepository.findOne({
             where: { id: userId },
         });
-        if (!user) {
+        if (!employee) {
             throw new NotFoundException('User not found');
         }
-        const { password_hash, ...result } = user;
+        const { password_hash, ...result } = employee;
         return result;
     }
 }

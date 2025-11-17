@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Audit } from './audit.entity';
 import { AuditService } from './audit.service';
-import { User } from 'src/authz/users/user.entity';
+import { Employee } from '../employees/employee.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Audit, User])],
+    imports: [TypeOrmModule.forFeature([Audit, Employee])],
     providers: [AuditService],
     exports: [AuditService],
 })

@@ -9,13 +9,16 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
+    Put,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../authz/roles.guard';
 import { RolesGuard } from '../authz/roles.guard';
 import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
+import { UpdateEmployeeRolesDto } from './dto/update-employee-roles.dto';
 import { EmployeesService } from './employees.service';
+import { RegisterEmployeeDto } from '../authz/dto/register-employee.dto';
 
 @Controller('profiles')
 export class EmployeesController {
@@ -28,13 +31,19 @@ export class EmployeesController {
         return this.employeesService.create(createEmployeeProfileDto);
     }
 
+    @Get()
+    @UseGuards(AuthGuard('jwt'))
+    findAll() {
+        return this.employeesService.findAll();
+    }
+
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
     findOne(@Param('id') id: string, @Request() req) {
         return this.employeesService.findOne(id, req.user);
     }
 
-    @Patch(':id')
+    @Put(':id')
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(HttpStatus.NO_CONTENT)
     update(
@@ -47,5 +56,15 @@ export class EmployeesController {
             updateEmployeeProfileDto,
             req.user,
         );
+    }
+    @Put(':id/roles')
+    @Roles('ADMIN')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    updateRoles(
+        @Param('id') id: string,
+        @Body() updateEmployeeRolesDto: UpdateEmployeeRolesDto,
+    ) {
+        return this.employeesService.updateRoles(id, updateEmployeeRolesDto);
     }
 }

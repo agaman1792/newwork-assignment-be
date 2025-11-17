@@ -2,66 +2,61 @@ import {
     Injectable,
     NotFoundException,
     ForbiddenException,
+    ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from './employee.entity';
 import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
-import { User } from '../authz/users/user.entity';
+import { UpdateEmployeeRolesDto } from './dto/update-employee-roles.dto';
+import * as bcrypt from 'bcrypt';
+import e from 'express';
 
 @Injectable()
 export class EmployeesService {
     constructor(
         @InjectRepository(Employee)
         private employeesRepository: Repository<Employee>,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
     ) {}
 
     async create(
         createEmployeeProfileDto: CreateEmployeeProfileDto,
     ): Promise<Employee> {
-        const { userId, ...employeeData } = createEmployeeProfileDto;
-        const user = await this.usersRepository.findOne({
-            where: { id: userId },
-        });
+        const { email, password, roles } = createEmployeeProfileDto;
 
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found`);
+        const existingEmployee = await this.employeesRepository.findOne({
+            where: { email },
+        });
+        if (existingEmployee) {
+            throw new ConflictException('Employee with this email already exists');
         }
 
+        const password_hash = await bcrypt.hash(password, 10);
+
         const employee = this.employeesRepository.create({
-            user_id: userId,
-            first_name: employeeData.firstName,
-            last_name: employeeData.lastName,
-            position: employeeData.position,
-            department: employeeData.department,
-            phone: employeeData.phone,
-            location: employeeData.location,
-            hire_date: new Date(employeeData.hireDate),
-            birth_date: new Date(employeeData.birthDate),
-            salary: parseFloat(employeeData.salary),
-            ssn: employeeData.ssn,
-            bio: employeeData.bio,
-            skills: employeeData.skills,
-            image_url: employeeData.imageUrl,
+            email,
+            password_hash,
+            roles: roles || 'EMPLOYEE',
         });
 
         return this.employeesRepository.save(employee);
     }
 
-    async findOne(id: string, user: User): Promise<Partial<Employee>> {
+    async findAll(): Promise<Employee[]> {
+        return this.employeesRepository.find();
+    }
+
+    async findOne(id: string, user: Employee): Promise<Partial<Employee>> {
         const employee = await this.employeesRepository.findOne({
             where: { id },
-            relations: ['user'],
         });
 
         if (!employee) {
             throw new NotFoundException(`Employee with ID ${id} not found`);
         }
 
-        const isOwner = employee.user_id === user.id;
+        const isOwner = employee.id === user.id;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -78,18 +73,17 @@ export class EmployeesService {
     async update(
         id: string,
         updateEmployeeProfileDto: UpdateEmployeeProfileDto,
-        user: User,
+        user: Employee,
     ): Promise<void> {
         const employee = await this.employeesRepository.findOne({
             where: { id },
-            relations: ['user'],
         });
 
         if (!employee) {
             throw new NotFoundException(`Employee with ID ${id} not found`);
         }
 
-        const isOwner = employee.user_id === user.id;
+        const isOwner = employee.id === user.id;
         const isManager = user.roles.includes('MANAGER');
         const isAdmin = user.roles.includes('ADMIN');
 
@@ -111,6 +105,7 @@ export class EmployeesService {
             bio,
             skills,
             imageUrl,
+            roles,
         } = updateEmployeeProfileDto;
 
         if (firstName) employee.first_name = firstName;
@@ -126,6 +121,24 @@ export class EmployeesService {
         if (bio) employee.bio = bio;
         if (skills) employee.skills = skills;
         if (imageUrl) employee.image_url = imageUrl;
+        if (roles) employee.roles = roles;
+
+        await this.employeesRepository.save(employee);
+    }
+
+    async updateRoles(
+        id: string,
+        updateEmployeeRolesDto: UpdateEmployeeRolesDto,
+    ): Promise<void> {
+        const employee = await this.employeesRepository.findOne({
+            where: { id },
+        });
+
+        if (!employee) {
+            throw new NotFoundException(`Employee with ID ${id} not found`);
+        }
+
+        employee.roles = updateEmployeeRolesDto.roles;
 
         await this.employeesRepository.save(employee);
     }

@@ -13,20 +13,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterEmployeeDto } from './dto/register-employee.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Roles, RolesGuard } from './roles.guard';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
-
-    @Post('users')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    register(@Body() registerUserDto: RegisterUserDto): Promise<void> {
-        console.log(registerUserDto);
-        return this.authService.register(registerUserDto);
-    }
 
     @Post('login')
     @HttpCode(HttpStatus.OK)

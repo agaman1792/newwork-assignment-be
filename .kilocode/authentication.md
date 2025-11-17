@@ -2,7 +2,7 @@
 
 All authentication related code will reside in the `src/authz` directory
 
-All users of this application are represented as the `User` entity (refer to `data-model.md` for more information)
+All users of this application are represented as the `Employee` entity (refer to `data-model.md` for more information)
 
 ## High-level concerns
 
@@ -18,16 +18,16 @@ We will have an authentication service, `auth.service.ts` which handles the foll
 
 The authentication service and the authentication controller will be packaged inside the authentication module `auth.module.ts`
 
-## User roles
+## Employee roles
 
-Each `User` can have one of the following roles
-* ADMINISTRATOR
+Each `Employee` can have one of the following roles
+* ADMIN
 * MANAGER
 * EMPLOYEE
 
 ## Password hashing
 
-In order to authenticate a user, we will search the `Users` table for a matching e-mail and compare the password hash
+In order to authenticate a user, we will search the `Employees` table for a matching e-mail and compare the password hash
 The password hash is set in the following cases
 * When a user is registered
 * When the password is changed
@@ -64,17 +64,8 @@ For each endpoint that contains a request body, create a DTO
 * Response code: 200
 
 The password will be received in plain in the request body
-Search a user in the `Users` table with the respective e-mail
+Search a user in the `Employees` table with the respective e-mail
 Hash the password received in the request body and compare it with the database `password_hash`
-
-#### Register user
-* Request method: POST
-* Request path: /users
-* Request body:
-    * e-mail
-    * password
-    * roles
-* Response: 204 no content on success
 
 #### Change password
 * Request method: POST

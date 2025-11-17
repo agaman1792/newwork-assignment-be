@@ -8,6 +8,7 @@ import { EmployeesModule } from './employees/employees.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { AbsenceRequestsModule } from './absence-requests/absence-requests.module';
 import { AuditModule } from './audit/audit.module';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
     imports: [
@@ -29,6 +30,7 @@ import { AuditModule } from './audit/audit.module';
         FeedbackModule,
         AbsenceRequestsModule,
         AuditModule,
+        SeederModule,
     ],
     controllers: [AppController],
     providers: [AppService],

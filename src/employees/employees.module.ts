@@ -4,10 +4,8 @@ import { Employee } from './employee.entity';
 import { AuthModule } from '../authz/auth.module';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
-import { User } from '../authz/users/user.entity';
-
 @Module({
-    imports: [TypeOrmModule.forFeature([Employee, User]), AuthModule],
+    imports: [TypeOrmModule.forFeature([Employee]), AuthModule],
     providers: [EmployeesService],
     controllers: [EmployeesController],
     exports: [EmployeesService],

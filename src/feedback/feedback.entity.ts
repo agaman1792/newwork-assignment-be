@@ -7,8 +7,6 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Employee } from '../employees/employee.entity';
-import { User } from '../authz/users/user.entity';
-
 @Entity('Feedbacks')
 export class Feedback {
     @PrimaryGeneratedColumn('uuid')
@@ -24,9 +22,9 @@ export class Feedback {
     @Column({ type: 'text' })
     author_id: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => Employee)
     @JoinColumn({ name: 'author_id' })
-    author: User;
+    author: Employee;
 
     @Column({ type: 'text' })
     text_original: string;

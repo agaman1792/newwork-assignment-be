@@ -16,28 +16,16 @@ We use TypeORM in order to define our database entities
         * The file name will be `shopping-cart.entity.ts`
         * The database table will be `ShoppingCarts`
 
-The only entity that does not respect the above pattern is the `User` entity, which has the following rule
-* It will be placed inside the `src/authz/users` directory
-
 The following entities are part of the application
-
-## User
-| Field         | Type     | Info                                                   |
-| ------------- | -------- | ------------------------------------------------------ |
-| id            | TEXT     | Primary key (UUID)                                     |
-| email         | TEXT     | Unique                                                 |
-| password_hash | TEXT     | Hashed password                                        |
-| roles         | TEXT     | Comma-separated roles (`EMPLOYEE`, `MANAGER`, `ADMIN`) |
-| is_active     | INTEGER  | Boolean (0/1)                                          |
-| created_at    | DATETIME | Auto timestamp                                         |
-| updated_at    | DATETIME | Auto timestamp                                         |
-
 
 ## Employee
 | Field      | Type     | Info                              |
 | ---------- | -------- | --------------------------------- |
 | id         | TEXT     | Primary key (UUID)                |
-| user_id    | TEXT     | FK → users.id (unique, nullable)  |
+| email         | TEXT     | Unique                                                 |
+| password_hash | TEXT     | Hashed password                                        |
+| roles         | TEXT     | Comma-separated roles (`EMPLOYEE`, `MANAGER`, `ADMIN`) |
+| is_active     | INTEGER  | Boolean (0/1)                                          |
 | first_name | TEXT     |                                   |
 | last_name  | TEXT     |                                   |
 | position   | TEXT     |                                   |
@@ -58,7 +46,7 @@ The following entities are part of the application
 | Field         | Type     | Info                      |
 | ------------- | -------- | ------------------------- |
 | id            | TEXT     | Primary key               |
-| profile_id    | TEXT     | FK → employee_profiles.id |
+| employee_id    | TEXT     | FK → employee.id |
 | author_id     | TEXT     | FK → users.id             |
 | text_original | TEXT     | Original text             |
 | text_polished | TEXT     | Polished by AI (optional) |
@@ -69,8 +57,8 @@ The following entities are part of the application
 | Field       | Type     | Info                                           |
 | ----------- | -------- | ---------------------------------------------- |
 | id          | TEXT     | Primary key                                    |
-| profile_id  | TEXT     | FK → employee_profiles.id                      |
-| approver_id | TEXT     | FK → users.id, nullable                        |
+| employee_id  | TEXT     | FK → employee.id                      |
+| approver_id | TEXT     | FK → employee.id, nullable                        |
 | start_date  | DATETIME |                                                |
 | end_date    | DATETIME |                                                |
 | reason      | TEXT     |                                                |
@@ -82,7 +70,7 @@ The following entities are part of the application
 | Field      | Type     | Info                  |
 | ---------- | -------- | --------------------- |
 | id         | TEXT     | Primary key           |
-| user_id    | TEXT     | FK → users.id         |
+| employee_id    | TEXT     | FK → employee.id         |
 | action     | TEXT     | Action description    |
 | entity     | TEXT     | Entity name           |
 | entity_id  | TEXT     | ID of affected record |

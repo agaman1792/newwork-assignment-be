@@ -2,13 +2,13 @@
 
 Endpoints:
 
-POST /employee-profiles/:id/absence-requests
+POST /profiles/:id/absence-requests
 
 Roles: employee (self), manager, admin
 
 Creates a PENDING request.
 
-GET /employee-profiles/:id/absence-requests
+GET /profiles/:id/absence-requests
 
 Self: see own
 
