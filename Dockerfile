@@ -18,12 +18,9 @@ WORKDIR /app
 RUN chown node:node /app
 
 COPY --from=build --chown=node:node /app/dist .
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/package.json .
 COPY --from=build --chown=node:node /app/package-lock.json .
 
-RUN npm ci
-
 USER node
-RUN touch ${SQLITE_DB_PATH}
-
 CMD ["node", "main.js"]
