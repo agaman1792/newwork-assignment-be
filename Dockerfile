@@ -7,7 +7,7 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-FROM node:24.11 AS service
+FROM node:24.11-alpine AS service
 
 ENV SQLITE_DB_PATH=/app/newwork.db
 ENV JWT_SECRET=12345874598249023
